@@ -1,0 +1,22 @@
+package app.healthy.diet.model;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
+import java.util.List;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Meal {
+    private long id;
+    private String name;
+    private MealType mealType;
+    private String description;
+    private String healthBenefits;
+    private int cookingTime;
+    private boolean isLeftover;
+    private List<Ingredient> ingredients;
+    private String recipe;
+}
