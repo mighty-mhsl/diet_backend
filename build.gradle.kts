@@ -28,7 +28,7 @@ extra["springAiVersion"] = "1.0.0"
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	//implementation("org.springframework.ai:spring-ai-starter-model-anthropic")
+        implementation("org.springframework.ai:spring-ai-starter-model-anthropic")
 	implementation("org.liquibase:liquibase-core")
 	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("org.postgresql:postgresql")
