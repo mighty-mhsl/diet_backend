@@ -1,4 +1,4 @@
-package app.healthy.diet.service;
+package app.healthy.diet.client;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

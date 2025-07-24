@@ -1,5 +1,7 @@
 package app.healthy.diet.service;
 
+import app.healthy.diet.client.AnthropicClient;
+import app.healthy.diet.client.PromptLayerClient;
 import app.healthy.diet.model.MealPlan;
 import app.healthy.diet.model.Meal;
 import lombok.RequiredArgsConstructor;
