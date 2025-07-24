@@ -11,7 +11,4 @@ spring:
     anthropic:
       api-key: ${ANTHROPIC_API_KEY:}
 
-promptlayer:
-  api-key: ${PROMPTLAYER_API_KEY:}
-  meal-plan-id: ${MEAL_PLAN_PROMPT_ID:meal-plan}
 
