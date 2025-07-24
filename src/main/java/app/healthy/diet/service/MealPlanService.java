@@ -1,11 +1,9 @@
 package app.healthy.diet.service;
 
 import app.healthy.diet.client.AnthropicClient;
-import app.healthy.diet.client.PromptLayerClient;
 import app.healthy.diet.model.MealPlan;
 import app.healthy.diet.model.Meal;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,11 +15,12 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class MealPlanService {
     private final AnthropicClient anthropicClient;
-    private final PromptLayerClient promptLayerClient;
     private final ObjectMapper objectMapper;
 
-    @Value("${promptlayer.meal-plan-id}")
-    private String mealPlanPromptId;
+    private static final String MEAL_PLAN_PROMPT_TEMPLATE = """
+Generate a healthy meal plan between %s and %s.\n
+Return only JSON in the following structure:\n
+{\n  \"meals\": [\n    {\n      \"id\": 0,\n      \"name\": \"\",\n      \"mealType\": \"BREAKFAST|LUNCH|DINNER|BITE\",\n      \"description\": \"\",\n      \"healthBenefits\": \"\",\n      \"cookingTime\": 0,\n      \"isLeftover\": false,\n      \"ingredients\": [ { \"name\": \"\", \"quantity\": \"\", \"unit\": \"\" } ],\n      \"recipe\": \"\"\n    }\n  ]\n}\n""";
 
     public MealPlan getCurrentMealPlan() throws IOException {
         LocalDate start = LocalDate.now();
@@ -36,9 +35,7 @@ public class MealPlanService {
         return plan;
     }
 
-    private String buildPrompt(LocalDate start, LocalDate end) throws IOException {
-        String template = promptLayerClient.getPrompt(mealPlanPromptId);
-        return template.replace("{{startDate}}", start.toString())
-                .replace("{{endDate}}", end.toString());
+    private String buildPrompt(LocalDate start, LocalDate end) {
+        return String.format(MEAL_PLAN_PROMPT_TEMPLATE, start, end);
     }
 }
