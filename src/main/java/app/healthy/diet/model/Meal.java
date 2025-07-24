@@ -16,7 +16,7 @@ public class Meal {
     private String description;
     private String healthBenefits;
     private int cookingTime;
-    private boolean isLeftover;
+    private boolean leftover;
     private List<Ingredient> ingredients;
     private String recipe;
 }
