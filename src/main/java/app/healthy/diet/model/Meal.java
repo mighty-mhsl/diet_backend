@@ -23,7 +23,7 @@ public class Meal {
 
     private int cookingTime;
 
-    private boolean isLeftover;
+    private boolean leftover;
 
     private List<Ingredient> ingredients;
 

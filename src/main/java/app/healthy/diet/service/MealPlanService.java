@@ -6,6 +6,7 @@ import app.healthy.diet.model.Meal;
 import app.healthy.diet.repository.MealRepository;
 import app.healthy.diet.mapper.MealMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.time.LocalDate;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MealPlanService {
@@ -38,7 +40,10 @@ public class MealPlanService {
             
             # Format
             Return only JSON in the following structure:\n
-            {\n  \"meals\": [\n    {\n      \"id\": 0,\n      \"name\": \"\",\n      \"mealType\": \"BREAKFAST|LUNCH|DINNER|BITE\",\n      \"description\": \"\",\n      \"healthBenefits\": \"\",\n      \"cookingTime\": 0,\n      \"isLeftover\": false,\n      \"ingredients\": [ { \"name\": \"\", \"quantity\": \"\", \"unit\": \"\" } ],\n      \"recipe\": \"\"\n    }\n  ]\n}\n""";
+            {\n  \"meals\": [\n    {\n      \"id\": 0,\n      \"name\": \"\",\n      \"mealType\": \"BREAKFAST|LUNCH|DINNER|BITE\",\n      \"description\": \"\",\n      \"healthBenefits\": \"\",\n      \"cookingTime\": 0,\n      \"leftover\": false,\n      \"ingredients\": [ { \"name\": \"\", \"quantity\": \"\", \"unit\": \"\" } ],\n      \"recipe\": \"\"\n    }\n  ]\n}\n
+            
+            Don't add ```json``` or any other formatting to the JSON response. Just return the JSON object as is.\n
+            """;
 
     public MealPlan getCurrentMealPlan() throws IOException {
         LocalDate start = LocalDate.now();

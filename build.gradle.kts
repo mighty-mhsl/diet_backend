@@ -28,16 +28,17 @@ extra["springAiVersion"] = "1.0.0"
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-        implementation("org.springframework.ai:spring-ai-starter-model-anthropic")
-        implementation("org.liquibase:liquibase-core")
-        implementation("org.mapstruct:mapstruct:1.5.5.Final")
-        compileOnly("org.projectlombok:lombok")
-        runtimeOnly("org.postgresql:postgresql")
-        annotationProcessor("org.projectlombok:lombok")
-        annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
-        testImplementation("org.springframework.boot:spring-boot-starter-test")
-        testAnnotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
-        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+  implementation("org.springframework.ai:spring-ai-starter-model-anthropic")
+  implementation("org.liquibase:liquibase-core")
+  implementation("org.mapstruct:mapstruct:1.5.5.Final")
+  implementation ("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+  compileOnly("org.projectlombok:lombok")
+  runtimeOnly("org.postgresql:postgresql")
+  annotationProcessor("org.projectlombok:lombok")
+  annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
+  testImplementation("org.springframework.boot:spring-boot-starter-test")
+  testAnnotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
+  testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 dependencyManagement {
