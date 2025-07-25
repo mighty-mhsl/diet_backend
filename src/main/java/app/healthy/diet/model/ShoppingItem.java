@@ -12,6 +12,6 @@ public class ShoppingItem {
     private String ingredientName;
     private String quantity;
     private String unit;
-    private boolean isPurchased;
+    private boolean purchased;
     private String estimatedCost;
 }

@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import app.healthy.diet.exception.EntityNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,10 +25,11 @@ public class InventoryService {
 
     private static final String EXPIRATION_PROMPT_TEMPLATE = """
             You are a helpful assistant that estimates expiration dates for grocery items assuming ideal storage conditions.\n
-            # Format\n            Return only JSON in the following structure:\n            [\n  {\n    \"id\": 0,\n    \"ingredientName\": \"\",\n    \"quantity\": \"\",\n    \"unit\": \"\",\n    \"isPurchased\": false,\n    \"estimatedCost\": \"\",\n    \"planDate\": \"YYYY-MM-DD\",\n    \"expirationDate\": \"YYYY-MM-DD\"\n  }\n]\n
+            # Format\n            Return only JSON in the following structure:\n            [\n  {\n    \"id\": 0,\n    \"ingredientName\": \"\",\n    \"quantity\": \"\",\n    \"unit\": \"\",\n    \"purchased\": false,\n    \"estimatedCost\": \"\",\n    \"planDate\": \"YYYY-MM-DD\",\n    \"expirationDate\": \"YYYY-MM-DD\"\n  }\n]\n
             Don't add ```json``` or any other formatting to the JSON response.\n
             Shopping items JSON:\n%s\n""";
 
+    @Transactional
     public void addItems(List<ShoppingItem> items) throws IOException {
         String itemsJson = objectMapper.writeValueAsString(items);
         String prompt = String.format(EXPIRATION_PROMPT_TEMPLATE, itemsJson);

@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -48,6 +49,7 @@ public class MealPlanService {
             """;
 
 
+    @Transactional
     public MealPlan getCurrentMealPlan() throws IOException {
         LocalDate start = LocalDate.now();
         LocalDate end = start.plusDays(2);
@@ -60,7 +62,9 @@ public class MealPlanService {
         }
 
         String prompt = buildPrompt(start, end);
+        log.info("Generating meal plan for dates: {} to {}", start, end);
         String completion = anthropicClient.complete(prompt);
+        log.info("Meal plan completion: {}", completion);
         MealPlan plan = objectMapper.readValue(completion, MealPlan.class);
         int total = plan.getMeals().stream().mapToInt(Meal::getCookingTime).sum();
         plan.setStartDate(start);

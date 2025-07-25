@@ -20,7 +20,9 @@ public class ShoppingItem {
     private String ingredientName;
     private String quantity;
     private String unit;
-    private boolean isPurchased;
+
+    @Column(name = "is_purchased")
+    private boolean purchased;
     private String estimatedCost;
     private LocalDate planDate;
 }

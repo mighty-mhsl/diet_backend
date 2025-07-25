@@ -9,12 +9,15 @@ import app.healthy.diet.repository.ShoppingItemRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ShoppingListService {
@@ -28,17 +31,20 @@ public class ShoppingListService {
             # Task\n
             Combine all ingredients from the meals, merge duplicates and sum the required quantities.\n
             # Format\n            Return only JSON in the following structure:\n
-            [\n  {\n    \"id\": 0,\n    \"ingredientName\": \"\",\n    \"quantity\": \"\",\n    \"unit\": \"\",\n    \"isPurchased\": false,\n    \"estimatedCost\": \"\"\n  }\n]\n
+            [\n  {\n    \"id\": 0,\n    \"ingredientName\": \"\",\n    \"quantity\": \"\",\n    \"unit\": \"\",\n    \"purchased\": false,\n    \"estimatedCost\": \"\"\n  }\n]\n
             Don't add ```json``` or any other formatting to the JSON response.\n
             Meals JSON:\n%s\n
             """;
 
+    @Transactional
     public void generateAndSave(LocalDate planDate, String mealsJson) throws IOException {
         String prompt = String.format(SHOPPING_LIST_PROMPT_TEMPLATE, mealsJson);
+        log.info("Generating shopping list for plan date: {}", planDate);
         String completion = anthropicClient.complete(prompt);
+        log.info("Shopping list completion: {}", completion);
         List<ShoppingItem> items = objectMapper.readValue(
                 completion,
-                new TypeReference<List<ShoppingItem>>() {}
+                new TypeReference<>() {}
         );
         var entities = items.stream()
                 .map(item -> {

@@ -15,8 +15,9 @@ public class AnthropicClient {
 
     public String complete(String prompt) {
         AnthropicChatOptions options = AnthropicChatOptions.builder()
-                .model("claude-sonnet-4-20250514")
-                .maxTokens(30_000)
+//                .model("claude-sonnet-4-20250514")
+                .model("claude-3-7-sonnet-latest")
+                .maxTokens(8_192)
                 .build();
         return chatClient.prompt()
                 .user(prompt)
