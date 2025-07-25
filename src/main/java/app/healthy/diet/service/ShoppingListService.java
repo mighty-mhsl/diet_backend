@@ -3,6 +3,8 @@ package app.healthy.diet.service;
 import app.healthy.diet.client.AnthropicClient;
 import app.healthy.diet.mapper.ShoppingItemMapper;
 import app.healthy.diet.model.ShoppingItem;
+import app.healthy.diet.model.ShoppingList;
+import app.healthy.diet.exception.EntityNotFoundException;
 import app.healthy.diet.repository.ShoppingItemRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,5 +48,34 @@ public class ShoppingListService {
                 })
                 .toList();
         shoppingItemRepository.saveAll(entities);
+    }
+
+    public ShoppingList getCurrentShoppingList() {
+        LocalDate today = LocalDate.now();
+        var firstOpt = shoppingItemRepository.findFirstByPlanDateLessThanEqualOrderByPlanDateDesc(today);
+        if (firstOpt.isEmpty()) {
+            throw new EntityNotFoundException("Shopping list not found for current plan");
+        }
+        LocalDate planDate = firstOpt.get().getPlanDate();
+        if (planDate.plusDays(2).isBefore(today)) {
+            throw new EntityNotFoundException("Shopping list not found for current plan");
+        }
+        var items = shoppingItemRepository.findByPlanDate(planDate).stream()
+                .map(shoppingItemMapper::toDto)
+                .toList();
+        double total = items.stream()
+                .mapToDouble(i -> {
+                    String cost = i.getEstimatedCost();
+                    if (cost == null || cost.isBlank()) {
+                        return 0;
+                    }
+                    try {
+                        return Double.parseDouble(cost);
+                    } catch (NumberFormatException ex) {
+                        return 0;
+                    }
+                })
+                .sum();
+        return new ShoppingList(0, items, total, planDate);
     }
 }
