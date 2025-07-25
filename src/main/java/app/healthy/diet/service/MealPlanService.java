@@ -5,6 +5,7 @@ import app.healthy.diet.model.MealPlan;
 import app.healthy.diet.model.Meal;
 import app.healthy.diet.repository.MealRepository;
 import app.healthy.diet.mapper.MealMapper;
+import app.healthy.diet.service.ShoppingListService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class MealPlanService {
     private final ObjectMapper objectMapper;
     private final MealRepository mealRepository;
     private final MealMapper mealMapper;
+    private final ShoppingListService shoppingListService;
 
     private static final String MEAL_PLAN_PROMPT_TEMPLATE = """
             # Role
@@ -44,6 +46,7 @@ public class MealPlanService {
             
             Don't add ```json``` or any other formatting to the JSON response. Just return the JSON object as is.\n
             """;
+
 
     public MealPlan getCurrentMealPlan() throws IOException {
         LocalDate start = LocalDate.now();
@@ -74,6 +77,8 @@ public class MealPlanService {
 
         mealRepository.saveAll(entities);
 
+        shoppingListService.generateAndSave(start, completion);
+
         return plan;
     }
 
@@ -81,4 +86,5 @@ public class MealPlanService {
     private String buildPrompt(LocalDate start, LocalDate end) {
         return String.format(MEAL_PLAN_PROMPT_TEMPLATE, start, end);
     }
+
 }
