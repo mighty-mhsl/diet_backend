@@ -16,3 +16,9 @@ databaseChangeLog:
       changes:
         - sqlFile:
             path: db/changelog/03-create-shopping-items.sql
+  - changeSet:
+      id: 4
+      author: codex
+      changes:
+        - sqlFile:
+            path: db/changelog/04-create-inventory.sql
