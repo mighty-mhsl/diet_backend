@@ -3,6 +3,8 @@ package app.healthy.diet.service;
 import app.healthy.diet.client.AnthropicClient;
 import app.healthy.diet.model.MealPlan;
 import app.healthy.diet.model.Meal;
+import app.healthy.diet.repository.MealRepository;
+import app.healthy.diet.mapper.MealMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,8 @@ import java.time.LocalDate;
 public class MealPlanService {
     private final AnthropicClient anthropicClient;
     private final ObjectMapper objectMapper;
+    private final MealRepository mealRepository;
+    private final MealMapper mealMapper;
 
     private static final String MEAL_PLAN_PROMPT_TEMPLATE = """
             # Role
@@ -39,6 +43,14 @@ public class MealPlanService {
     public MealPlan getCurrentMealPlan() throws IOException {
         LocalDate start = LocalDate.now();
         LocalDate end = start.plusDays(2);
+
+        if (mealRepository.existsByCookDate(start)) {
+            var entities = mealRepository.findWithIngredientsBetween(start, end);
+            var meals = entities.stream().map(mealMapper::toDto).toList();
+            int total = meals.stream().mapToInt(Meal::getCookingTime).sum();
+            return new MealPlan(0, start, end, meals, total);
+        }
+
         String prompt = buildPrompt(start, end);
         String completion = anthropicClient.complete(prompt);
         MealPlan plan = objectMapper.readValue(completion, MealPlan.class);
@@ -46,8 +58,20 @@ public class MealPlanService {
         plan.setStartDate(start);
         plan.setEndDate(end);
         plan.setTotalCookingTime(total);
+
+        for (Meal meal : plan.getMeals()) {
+            meal.setCookDate(start);
+        }
+
+        var entities = plan.getMeals().stream()
+                .map(mealMapper::toEntity)
+                .toList();
+
+        mealRepository.saveAll(entities);
+
         return plan;
     }
+
 
     private String buildPrompt(LocalDate start, LocalDate end) {
         return String.format(MEAL_PLAN_PROMPT_TEMPLATE, start, end);

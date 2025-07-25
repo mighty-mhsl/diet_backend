@@ -4,3 +4,9 @@ databaseChangeLog:
       author: mhsl
       comment: Initial empty changeset
       changes: [ ]
+  - changeSet:
+      id: 2
+      author: codex
+      changes:
+        - sqlFile:
+            path: db/changelog/02-create-meals.sql
