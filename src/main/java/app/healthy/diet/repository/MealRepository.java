@@ -11,5 +11,8 @@ public interface MealRepository extends JpaRepository<Meal, Long> {
     boolean existsByCookDate(LocalDate cookDate);
     @Query("SELECT m FROM Meal m LEFT JOIN FETCH m.ingredients WHERE m.cookDate BETWEEN :start AND :end")
     List<Meal> findWithIngredientsBetween(@Param("start") LocalDate start, @Param("end") LocalDate end);
+
+    @Query("SELECT m FROM Meal m LEFT JOIN FETCH m.ingredients WHERE m.id = :id")
+    java.util.Optional<Meal> findWithIngredientsById(@Param("id") Long id);
 }
 
