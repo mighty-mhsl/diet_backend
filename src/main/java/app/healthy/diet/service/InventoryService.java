@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import app.healthy.diet.exception.EntityNotFoundException;
 
 import java.io.IOException;
 import java.util.List;
@@ -39,5 +40,18 @@ public class InventoryService {
                 .map(inventoryMapper::toEntity)
                 .toList();
         inventoryRepository.saveAll(entities);
+    }
+
+    public List<InventoryItem> getAllItems() {
+        return inventoryRepository.findAll().stream()
+                .map(inventoryMapper::toDto)
+                .toList();
+    }
+
+    public void removeItem(Long id) {
+        if (!inventoryRepository.existsById(id)) {
+            throw new EntityNotFoundException("Inventory item not found with id " + id);
+        }
+        inventoryRepository.deleteById(id);
     }
 }
