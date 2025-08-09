@@ -18,8 +18,7 @@ public class Ingredient {
     private Long id;
 
     private String name;
-    private String quantity;
-    private String unit;
+    private double grams;
 
     @ManyToOne
     @JoinColumn(name = "meal_id")

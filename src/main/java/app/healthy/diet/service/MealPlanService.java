@@ -51,7 +51,7 @@ public class MealPlanService {
             
             # Format
             Return only JSON in the following structure:\n
-            {\n  \"meals\": [\n    {\n      \"id\": 0,\n      \"name\": \"\",\n      \"mealType\": \"BREAKFAST|LUNCH|DINNER|BITE\",\n      \"description\": \"\",\n      \"healthBenefits\": \"\",\n      \"cookingTime\": 0,\n      \"leftover\": false,\n      \"ingredients\": [ { \"name\": \"\", \"quantity\": \"\", \"unit\": \"\" } ],\n      \"recipe\": \"\"\n    }\n  ]\n}\n
+            {\n  \"meals\": [\n    {\n      \"id\": 0,\n      \"name\": \"\",\n      \"mealType\": \"BREAKFAST|LUNCH|DINNER|BITE\",\n      \"description\": \"\",\n      \"healthBenefits\": \"\",\n      \"cookingTime\": 0,\n      \"leftover\": false,\n      \"ingredients\": [ { \"name\": \"\", \"grams\": 0 } ],\n      \"recipe\": \"\"\n    }\n  ]\n}\n
             
             Don't add ```json``` or any other formatting to the JSON response. Just return the JSON object as is.\n
             """;

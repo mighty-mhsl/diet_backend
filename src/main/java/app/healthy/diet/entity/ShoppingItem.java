@@ -18,8 +18,7 @@ public class ShoppingItem {
     private Long id;
 
     private String ingredientName;
-    private String quantity;
-    private String unit;
+    private double grams;
 
     @Column(name = "is_purchased")
     private boolean purchased;

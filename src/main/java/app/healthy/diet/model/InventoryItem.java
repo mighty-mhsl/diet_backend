@@ -12,8 +12,7 @@ import java.time.LocalDate;
 public class InventoryItem {
     private long id;
     private String ingredientName;
-    private String quantity;
-    private String unit;
+    private double grams;
     private boolean isPurchased;
     private String estimatedCost;
     private LocalDate planDate;

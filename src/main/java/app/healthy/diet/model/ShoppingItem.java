@@ -10,8 +10,7 @@ import lombok.NoArgsConstructor;
 public class ShoppingItem {
     private long id;
     private String ingredientName;
-    private String quantity;
-    private String unit;
+    private double grams;
     private boolean purchased;
     private String estimatedCost;
 }

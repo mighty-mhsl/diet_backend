@@ -9,6 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Ingredient {
     private String name;
-    private String quantity;
-    private String unit;
+    private double grams;
 }

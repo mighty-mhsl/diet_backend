@@ -22,3 +22,9 @@ databaseChangeLog:
       changes:
         - sqlFile:
             path: db/changelog/04-create-inventory.sql
+  - changeSet:
+      id: 5
+      author: codex
+      changes:
+        - sqlFile:
+            path: db/changelog/05-alter-weights.sql
