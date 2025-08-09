@@ -18,6 +18,7 @@ public class Ingredient {
     private Long id;
 
     private String name;
+    private String details;
     private double grams;
 
     @ManyToOne

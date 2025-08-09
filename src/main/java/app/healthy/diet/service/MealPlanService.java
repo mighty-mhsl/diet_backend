@@ -43,6 +43,7 @@ public class MealPlanService {
             The daily total cooking time for the meal plan should not exceed 90 minutes.\n
             The ingredients may be found in a typical grocery store and should be easy to prepare.\n
             The recipe field in the response should include step-by-step instructions for preparing the meal.\n
+            Ingredient preparation details like "sliced" or "chopped" must be placed in a separate "details" field while the "name" contains only the ingredient itself.\n
 
             The following meals were generated recently and should be excluded from the new plan: %s\n
 
@@ -51,7 +52,7 @@ public class MealPlanService {
             
             # Format
             Return only JSON in the following structure:\n
-            {\n  \"meals\": [\n    {\n      \"id\": 0,\n      \"name\": \"\",\n      \"mealType\": \"BREAKFAST|LUNCH|DINNER|BITE\",\n      \"description\": \"\",\n      \"healthBenefits\": \"\",\n      \"cookingTime\": 0,\n      \"leftover\": false,\n      \"ingredients\": [ { \"name\": \"\", \"grams\": 0 } ],\n      \"recipe\": \"\"\n    }\n  ]\n}\n
+            {\n  \"meals\": [\n    {\n      \"id\": 0,\n      \"name\": \"\",\n      \"mealType\": \"BREAKFAST|LUNCH|DINNER|BITE\",\n      \"description\": \"\",\n      \"healthBenefits\": \"\",\n      \"cookingTime\": 0,\n      \"leftover\": false,\n      \"ingredients\": [ { \"name\": \"\", \"details\": \"\", \"grams\": 0 } ],\n      \"recipe\": \"\"\n    }\n  ]\n}\n
             
             Don't add ```json``` or any other formatting to the JSON response. Just return the JSON object as is.\n
             """;

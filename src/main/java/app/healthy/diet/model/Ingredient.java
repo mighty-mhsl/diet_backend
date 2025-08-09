@@ -9,5 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Ingredient {
     private String name;
+    private String details;
     private double grams;
 }

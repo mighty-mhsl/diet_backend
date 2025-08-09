@@ -34,3 +34,9 @@ databaseChangeLog:
       changes:
         - sqlFile:
             path: db/changelog/06-add-cooked-flag.sql
+  - changeSet:
+      id: 7
+      author: codex
+      changes:
+        - sqlFile:
+            path: db/changelog/07-add-ingredient-details.sql
