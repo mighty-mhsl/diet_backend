@@ -25,6 +25,8 @@ public class Meal {
 
     private boolean leftover;
 
+    private boolean cooked;
+
     private List<Ingredient> ingredients;
 
     private String recipe;

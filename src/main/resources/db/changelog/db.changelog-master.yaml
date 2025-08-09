@@ -28,3 +28,9 @@ databaseChangeLog:
       changes:
         - sqlFile:
             path: db/changelog/05-alter-weights.sql
+  - changeSet:
+      id: 6
+      author: codex
+      changes:
+        - sqlFile:
+            path: db/changelog/06-add-cooked-flag.sql
