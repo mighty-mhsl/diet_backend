@@ -6,6 +6,7 @@ import app.healthy.diet.model.Meal;
 import app.healthy.diet.repository.MealRepository;
 import app.healthy.diet.mapper.MealMapper;
 import app.healthy.diet.service.ShoppingListService;
+import app.healthy.diet.config.MealPlanProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -25,6 +27,7 @@ public class MealPlanService {
     private final MealRepository mealRepository;
     private final MealMapper mealMapper;
     private final ShoppingListService shoppingListService;
+    private final MealPlanProperties mealPlanProperties;
 
     private static final String MEAL_PLAN_PROMPT_TEMPLATE = """
             # Role
@@ -37,7 +40,9 @@ public class MealPlanService {
             The daily total cooking time for the meal plan should not exceed 90 minutes.\n
             The ingredients may be found in a typical grocery store and should be easy to prepare.\n
             The recipe field in the response should include step-by-step instructions for preparing the meal.\n
-            
+
+            The following meals were generated recently and should be excluded from the new plan: %s\n
+
             # Task
             Generate a healthy meal plan between %s and %s.\n
             
@@ -52,7 +57,7 @@ public class MealPlanService {
     @Transactional
     public MealPlan getCurrentMealPlan() throws IOException {
         LocalDate start = LocalDate.now();
-        LocalDate end = start.plusDays(2);
+        LocalDate end = start.plusDays(mealPlanProperties.getGenerationDays());
 
         if (mealRepository.existsByCookDate(start)) {
             var entities = mealRepository.findWithIngredientsBetween(start, end);
@@ -61,7 +66,10 @@ public class MealPlanService {
             return new MealPlan(0, start, end, meals, total);
         }
 
-        String prompt = buildPrompt(start, end);
+        LocalDate exclusionStart = start.minusDays(mealPlanProperties.getExclusionDays());
+        LocalDate exclusionEnd = start.minusDays(1);
+        List<String> excludedMeals = mealRepository.findNamesByCookDateBetween(exclusionStart, exclusionEnd);
+        String prompt = buildPrompt(start, end, excludedMeals);
         log.info("Generating meal plan for dates: {} to {}", start, end);
         String completion = anthropicClient.complete(prompt);
         log.info("Meal plan completion: {}", completion);
@@ -87,8 +95,9 @@ public class MealPlanService {
     }
 
 
-    private String buildPrompt(LocalDate start, LocalDate end) {
-        return String.format(MEAL_PLAN_PROMPT_TEMPLATE, start, end);
+    private String buildPrompt(LocalDate start, LocalDate end, List<String> excludedMeals) {
+        String exclusions = excludedMeals.isEmpty() ? "None" : String.join(", ", excludedMeals);
+        return String.format(MEAL_PLAN_PROMPT_TEMPLATE, exclusions, start, end);
     }
 
 }

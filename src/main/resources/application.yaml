@@ -11,4 +11,9 @@ spring:
     anthropic:
       api-key: { key }
 
+diet:
+  meal-plan:
+    generation-days: 2
+    exclusion-days: 3
+
 
