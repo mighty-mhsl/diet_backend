@@ -6,6 +6,7 @@ import app.healthy.diet.model.ShoppingItem;
 import app.healthy.diet.model.ShoppingList;
 import app.healthy.diet.exception.EntityNotFoundException;
 import app.healthy.diet.repository.ShoppingItemRepository;
+import app.healthy.diet.config.MealPlanProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class ShoppingListService {
     private final ObjectMapper objectMapper;
     private final ShoppingItemRepository shoppingItemRepository;
     private final ShoppingItemMapper shoppingItemMapper;
+    private final MealPlanProperties mealPlanProperties;
 
     private static final String SHOPPING_LIST_PROMPT_TEMPLATE = """
             You are a helpful assistant. Use the provided meals JSON to build a consolidated shopping list.\n
@@ -63,7 +65,7 @@ public class ShoppingListService {
             throw new EntityNotFoundException("Shopping list not found for current plan");
         }
         LocalDate planDate = firstOpt.get().getPlanDate();
-        if (planDate.plusDays(2).isBefore(today)) {
+        if (planDate.plusDays(mealPlanProperties.getGenerationDays()).isBefore(today)) {
             throw new EntityNotFoundException("Shopping list not found for current plan");
         }
         var items = shoppingItemRepository.findByPlanDate(planDate).stream()
