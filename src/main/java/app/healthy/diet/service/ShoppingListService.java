@@ -10,6 +10,7 @@ import app.healthy.diet.model.ShoppingList;
 import app.healthy.diet.exception.EntityNotFoundException;
 import app.healthy.diet.repository.InventoryItemRepository;
 import app.healthy.diet.repository.ShoppingItemRepository;
+import app.healthy.diet.config.MealPlanProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class ShoppingListService {
     private final ShoppingItemRepository shoppingItemRepository;
     private final ShoppingItemMapper shoppingItemMapper;
     private final InventoryItemRepository inventoryItemRepository;
+    private final MealPlanProperties mealPlanProperties;
 
     private static final String PACK_SIZES_PROMPT_TEMPLATE = """
             You are a helpful assistant. For each ingredient name in the provided JSON array, provide the typical store package weight in grams.\n
@@ -100,7 +102,7 @@ public class ShoppingListService {
             throw new EntityNotFoundException("Shopping list not found for current plan");
         }
         LocalDate planDate = firstOpt.get().getPlanDate();
-        if (planDate.plusDays(2).isBefore(today)) {
+        if (planDate.plusDays(mealPlanProperties.getGenerationDays()).isBefore(today)) {
             throw new EntityNotFoundException("Shopping list not found for current plan");
         }
         var items = shoppingItemRepository.findByPlanDate(planDate).stream()
