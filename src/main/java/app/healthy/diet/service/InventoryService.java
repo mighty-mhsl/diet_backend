@@ -25,7 +25,7 @@ public class InventoryService {
 
     private static final String EXPIRATION_PROMPT_TEMPLATE = """
             You are a helpful assistant that estimates expiration dates for grocery items assuming ideal storage conditions.\n
-            # Format\n            Return only JSON in the following structure:\n            [\n  {\n    \"id\": 0,\n    \"ingredientName\": \"\",\n    \"quantity\": \"\",\n    \"unit\": \"\",\n    \"purchased\": false,\n    \"estimatedCost\": \"\",\n    \"planDate\": \"YYYY-MM-DD\",\n    \"expirationDate\": \"YYYY-MM-DD\"\n  }\n]\n
+            # Format\n            Return only JSON in the following structure:\n            [\n  {\n    \"id\": 0,\n    \"ingredientName\": \"\",\n    \"grams\": 0,\n    \"purchased\": false,\n    \"estimatedCost\": \"\",\n    \"planDate\": \"YYYY-MM-DD\",\n    \"expirationDate\": \"YYYY-MM-DD\"\n  }\n]\n
             Don't add ```json``` or any other formatting to the JSON response.\n
             Shopping items JSON:\n%s\n""";
 

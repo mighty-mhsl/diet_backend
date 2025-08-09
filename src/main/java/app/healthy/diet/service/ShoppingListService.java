@@ -2,9 +2,13 @@ package app.healthy.diet.service;
 
 import app.healthy.diet.client.AnthropicClient;
 import app.healthy.diet.mapper.ShoppingItemMapper;
+import app.healthy.diet.model.Ingredient;
+import app.healthy.diet.model.Meal;
+import app.healthy.diet.model.MealPlan;
 import app.healthy.diet.model.ShoppingItem;
 import app.healthy.diet.model.ShoppingList;
 import app.healthy.diet.exception.EntityNotFoundException;
+import app.healthy.diet.repository.InventoryItemRepository;
 import app.healthy.diet.repository.ShoppingItemRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,7 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -25,27 +32,57 @@ public class ShoppingListService {
     private final ObjectMapper objectMapper;
     private final ShoppingItemRepository shoppingItemRepository;
     private final ShoppingItemMapper shoppingItemMapper;
+    private final InventoryItemRepository inventoryItemRepository;
 
-    private static final String SHOPPING_LIST_PROMPT_TEMPLATE = """
-            You are a helpful assistant. Use the provided meals JSON to build a consolidated shopping list.\n
-            # Task\n
-            Combine all ingredients from the meals, merge duplicates and sum the required quantities.\n
-            # Format\n            Return only JSON in the following structure:\n
-            [\n  {\n    \"id\": 0,\n    \"ingredientName\": \"\",\n    \"quantity\": \"\",\n    \"unit\": \"\",\n    \"purchased\": false,\n    \"estimatedCost\": \"\"\n  }\n]\n
-            Don't add ```json``` or any other formatting to the JSON response.\n
-            Meals JSON:\n%s\n
-            """;
+    private static final String PACK_SIZES_PROMPT_TEMPLATE = """
+            You are a helpful assistant. For each ingredient name in the provided JSON array, provide the typical store package weight in grams.\n
+            # Format\n            Return only JSON in the following structure:\n            [\n  {\n    \"ingredientName\": \"\",\n    \"grams\": 0\n  }\n]\n            Don't add ```json``` or any other formatting to the JSON response.\n            Ingredients JSON:\n%s\n""";
 
     @Transactional
     public void generateAndSave(LocalDate planDate, String mealsJson) throws IOException {
-        String prompt = String.format(SHOPPING_LIST_PROMPT_TEMPLATE, mealsJson);
-        log.info("Generating shopping list for plan date: {}", planDate);
+        MealPlan plan = objectMapper.readValue(mealsJson, MealPlan.class);
+
+        Map<String, Double> needed = new HashMap<>();
+        for (Meal meal : plan.getMeals()) {
+            for (Ingredient ing : meal.getIngredients()) {
+                needed.merge(ing.getName(), ing.getGrams(), Double::sum);
+            }
+        }
+
+        var inventoryMap = inventoryItemRepository.findAll().stream()
+                .collect(Collectors.toMap(i -> i.getIngredientName(), i -> i.getGrams(), Double::sum));
+
+        needed.replaceAll((name, grams) -> grams - inventoryMap.getOrDefault(name, 0.0));
+
+        List<String> toBuy = needed.entrySet().stream()
+                .filter(e -> e.getValue() > 0)
+                .map(Map.Entry::getKey)
+                .toList();
+
+        if (toBuy.isEmpty()) {
+            return;
+        }
+
+        String ingredientsJson = objectMapper.writeValueAsString(toBuy);
+        String prompt = String.format(PACK_SIZES_PROMPT_TEMPLATE, ingredientsJson);
+        log.info("Requesting pack sizes: {}", ingredientsJson);
         String completion = anthropicClient.complete(prompt);
-        log.info("Shopping list completion: {}", completion);
+        log.info("Pack size completion: {}", completion);
+
         List<ShoppingItem> items = objectMapper.readValue(
                 completion,
                 new TypeReference<>() {}
         );
+
+        items.forEach(item -> {
+            double required = needed.getOrDefault(item.getIngredientName(), 0.0);
+            double pack = item.getGrams();
+            if (pack <= 0) {
+                pack = required;
+            }
+            item.setGrams(Math.ceil(required / pack) * pack);
+        });
+
         var entities = items.stream()
                 .map(item -> {
                     var entity = shoppingItemMapper.toEntity(item);
