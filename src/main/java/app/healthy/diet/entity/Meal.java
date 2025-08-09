@@ -33,6 +33,8 @@ public class Meal {
 
     private boolean isLeftover;
 
+    private boolean cooked;
+
     @OneToMany(mappedBy = "meal", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Ingredient> ingredients;
 
