@@ -3,6 +3,7 @@ package app.healthy.diet.service;
 import app.healthy.diet.client.AnthropicClient;
 import app.healthy.diet.model.MealPlan;
 import app.healthy.diet.model.Meal;
+import app.healthy.diet.model.MealType;
 import app.healthy.diet.repository.MealRepository;
 import app.healthy.diet.mapper.MealMapper;
 import app.healthy.diet.service.ShoppingListService;
@@ -17,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.EnumMap;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -79,8 +82,12 @@ public class MealPlanService {
         plan.setEndDate(end);
         plan.setTotalCookingTime(total);
 
+        Map<MealType, Integer> mealTypeDayCounts = new EnumMap<>(MealType.class);
+
         for (Meal meal : plan.getMeals()) {
-            meal.setCookDate(start); //todo: fix the date handling
+            int dayOffset = mealTypeDayCounts.getOrDefault(meal.getMealType(), 0);
+            meal.setCookDate(start.plusDays(dayOffset));
+            mealTypeDayCounts.put(meal.getMealType(), dayOffset + 1);
         }
 
         var entities = plan.getMeals().stream()
