@@ -72,7 +72,7 @@ public class MealPlanService {
         plan.setTotalCookingTime(total);
 
         for (Meal meal : plan.getMeals()) {
-            meal.setCookDate(start);
+            meal.setCookDate(start); //todo: fix the date handling
         }
 
         var entities = plan.getMeals().stream()
